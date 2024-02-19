@@ -1,8 +1,9 @@
-const {app} = require('../app.js')
+const app = require('../app.js')
 const db = require('../db/connection.js')
 const request = require('supertest')
 const seed = require('../db/seeds/seed.js')
 const testData = require('../db/data/test-data/index')
+const fs = require('fs/promises')
 
 beforeEach(() => seed(testData))
 afterAll(() => db.end())
@@ -12,27 +13,45 @@ describe('/api/topics', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
-        .then((response) => {
-            expect(response.body.topics).toHaveLength(3)
-            response.body.topics.forEach((topic) => {
-                expect(typeof topic.description).toBe('string')
-                expect(typeof topic.slug).toBe('string')    
-            })
-        })
-    })
-})
-describe("error handling", () => {
-    test("404 for missing endpoints", () => {
-      return request(app)
-      .get('/api/missing')
-      .expect(404)
-      .then(({body}) => {
-        expect(body.msg).toEqual('/api/missing endpoint not found')
+        .then(({ body }) => {
+          expect(body.topics).toHaveLength(3)
+          body.topics.forEach((topic) => {
+            expect(topic).toHaveProperty('slug')
+            expect(topic).toHaveProperty('description')
+          })
         })
     })
 })
 
-test('App should be defined', () => {
-    expect(app).toBeDefined();
-  });
+describe('/api endpoint', () => {
+    describe("error handling", () => {
+        test("404 for missing endpoints", () => {
+          return request(app)
+          .get('/api/missing')
+          .expect(404)
+          .then(({body}) => {
+            expect(body.msg).toEqual('/api/missing endpoint not found')
+            })
+        })
+    })
+})
+
+describe('/api endpoint', () => {
+    test('GET: 200 should return an object describing all available endpoints', () => {
+      return fs
+        .readFile(`${__dirname}/../endpoints.json`, 'utf8')
+        .then((body) => {
+          const expected = JSON.parse(body)
+          return Promise.all([request(app).get('/api').expect(200), expected])
+        })
+        .then((res) => {
+          const { body } = res[0]
+          const expected = res[1]
+          expect(body.endpoints).toEqual(expected)
+        })
+    })
+})
+
+
+
   
