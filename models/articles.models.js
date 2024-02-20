@@ -25,7 +25,6 @@ exports.selectCommentsByArticleId = (id) => {
   WHERE article_id = $1
   ORDER BY comments.created_at DESC;`,[id])
   .then(({rows}) => {
-    console.log(rows, "<<---- ROWS");
     if (!rows.length) {
       return Promise.reject({status:404, msg:'requested ID not found'})
     }
