@@ -82,3 +82,51 @@ describe('/api/articles/:article_id', () => {
     })
   })
   
+describe('/api/articles', () => {
+    test('GET: 200 should return an array of all articles,and all articles should have the following core properties: article_id,author,title,topic,created_at,votes,article_img_url', () => {
+      return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toHaveLength(13)
+          body.articles.forEach((article) => {
+            expect(typeof article.article_id).toBe('number')
+            expect(typeof article.author).toBe('string')
+            expect(typeof article.title).toBe('string')
+            expect(typeof article.topic).toBe('string')
+            expect(typeof article.created_at).toBe('string')
+            expect(typeof article.votes).toBe('number')
+            expect(typeof article.article_img_url).toBe('string')
+          })
+        })
+    })
+    test('GET: 200 should return an array of all articles, sorted by date created in descending order', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).toBeSortedBy('created_at', { descending: true })
+          })
+      })
+      test('GET: 200 none of the returned articles should have a body property', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body }) => {
+            body.articles.forEach((article) => {
+              expect(article).not.toHaveProperty('body')
+            })
+          })
+      })
+      test('GET: 200 returned articles should have a comment_count which is the total count of all comments on each article_id', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles[0].comment_count).toBe(2)
+            body.articles.forEach((article) => {
+              expect(typeof article.comment_count).toBe('number')
+            })
+          })
+      })
+    })  
