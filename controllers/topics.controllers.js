@@ -10,14 +10,12 @@ exports.getTopics = (req, res, next) => {
   .catch(next)
 }
 
-exports.getAllEndPoints = (request, response, next) => {
+exports.getAllEndPoints = (req, res, next) => {
     selectAllEndPoints()
     .then((allEndPoints) => {
-        response.status(200).send(allEndPoints)
+        res.status(200).send(allEndPoints)
     })
-    .catch((err) => {
-        next(err);
-    });
-};
+    .catch(next)
+    }
 
 
