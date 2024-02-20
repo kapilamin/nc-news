@@ -10,12 +10,26 @@ exports.selectAllArticles = () => {
   })
 }
 
-exports.selectArticleById = (article_id) => {
-  return db.query('SELECT * FROM articles WHERE article_id = $1', [article_id])
+exports.selectArticleById = (id) => {
+  return db.query('SELECT * FROM articles WHERE article_id = $1', [id])
   .then((res) => {
-      if (res.rows.length === 0) {
+      if (!res.rows.length) {
           return Promise.reject({status: 404, msg: 'requested article Id not found'})
       }
       return res.rows[0];
   });
 }
+
+exports.selectCommentsByArticleId = (id) => {
+  return db.query(`SELECT * FROM comments
+  WHERE article_id = $1
+  ORDER BY comments.created_at DESC;`,[id])
+  .then(({rows}) => {
+    console.log(rows, "<<---- ROWS");
+    if (!rows.length) {
+      return Promise.reject({status:404, msg:'requested ID not found'})
+    }
+    return rows
+  })
+}
+
