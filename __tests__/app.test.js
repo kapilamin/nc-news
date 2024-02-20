@@ -3,7 +3,7 @@ const db = require('../db/connection.js')
 const request = require('supertest')
 const seed = require('../db/seeds/seed.js')
 const testData = require('../db/data/test-data/index')
-const fs = require('fs/promises')
+const endpoints = require('../endpoints.json');
 
 beforeEach(() => seed(testData))
 afterAll(() => db.end())
@@ -34,21 +34,18 @@ describe("error handling", () => {
     })
 })
 
-describe('/api endpoint', () => {
-    test('GET: 200 should return an object describing all available endpoints', () => {
-      return fs
-        .readFile(`${__dirname}/../endpoints.json`, 'utf8')
-        .then((body) => {
-          const expected = JSON.parse(body)
-          return Promise.all([request(app).get('/api').expect(200), expected])
-        })
-        .then((res) => {
-          const { body } = res[0]
-          const expected = res[1]
-          expect(body.endpoints).toEqual(expected)
+describe("GET /api", () => {
+    test("GET 200: returns an object describing all the available endpoints", () => {
+        return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+            const body = response.body;
+            expect(body).toEqual(endpoints);
         })
     })
 })
+
 
 
 
