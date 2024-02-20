@@ -1,5 +1,4 @@
 const { selectTopics, selectAllEndPoints } = require("../models/topics.models")
-const endpoints = require('../endpoints.json');
 
 
 exports.getTopics = (req, res, next) => {
