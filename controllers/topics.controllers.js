@@ -10,13 +10,6 @@ exports.getTopics = (req, res, next) => {
   .catch(next)
 }
 
-// exports.getAllEndpoints = (req, res, next) => {
-//     return fs.readFile(`${__dirname}/endpoints.json`)
-//     .then((rawEndpoints) => {
-//         //const endpoints = JSON.parse(rawEndpoints)
-//         res.status(200).send({endpoints})
-//     })
-// }
 exports.getAllEndPoints = (request, response, next) => {
     selectAllEndPoints()
     .then((allEndPoints) => {
