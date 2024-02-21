@@ -69,7 +69,7 @@ describe('/api/articles/:article_id', () => {
       .get('/api/articles/banana')
       .expect(400)
       .then(({body}) => {
-        expect(body.msg).toEqual('invalid id supplied')
+        expect(body.msg).toEqual('invalid Id supplied')
       })
     })
     test("GET: 404 when requesting an article with an id that doesn't exist", () => {
@@ -161,7 +161,7 @@ describe('/api/articles/:article_id/comments', () => {
         .get('/api/articles/banana/comments')
         .expect(400)
         .then(({ body }) => {
-        expect(body.msg).toEqual('invalid id supplied')
+        expect(body.msg).toEqual('invalid Id supplied')
           })
       })
     test("GET: 404 when requesting comments from an article with an id that doesn't exist", () => {
@@ -195,4 +195,40 @@ describe('/api/articles/:article_id/comments', () => {
             expect(typeof postedComment.created_at).toBe('string')
         })
     })
-})
+    test('POST: 400 when attempting to post a comment to an article with an invalid id', () => {
+      return request(app)
+        .post('/api/articles/banana/comments')
+        .send({username:'lurker', body: 'Ditch Mitch'})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('invalid Id supplied')
+        })
+    })
+    test("POST: 404 when attempting to post a comment to an article with an id that doesn't exist", () => {
+      return request(app)
+        .post('/api/articles/99999/comments')
+        .send({username:'lurker', body: 'Ditch Mitch'})
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('requested article Id not found')
+        })
+    })
+    test("POST: 400 given username does not exist in database", () => {
+      return request(app)
+      .post('/api/articles/4/comments')
+      .send({username:'alias',body:'hello'})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual('username does not exist')
+      })
+    })
+    test('POST: 400 when the comment is missing a required field', () => {
+      return request(app)
+        .post('/api/articles/4/comments')
+        .send({ username: 'lurker' })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('body missing required field')
+        })
+    })
+  })
