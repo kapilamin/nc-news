@@ -2,33 +2,35 @@ const{ selectArticleById } = require("../models/articles.models");
 const { insertCommentsByArticleId, selectCommentsByArticleId } = require("../models/comments.models");
 
 exports.getCommentsByArticleId = (req, res, next) => {
-    console.log("I AM IN THE CONTROLLER");
-    const { article_id } = req.params;
-    selectArticleById(article_id) 
-      .then(article => {
-        if (!article) {
+  const { article_id } = req.params;
+  Promise.all([
+      selectArticleById(article_id),
+      selectCommentsByArticleId(article_id)
+  ])
+  .then(([article, comments]) => {
+      if (!article) {
           return res.status(404).send({ msg: 'requested article Id not found' });
-        }
-        return selectCommentsByArticleId(article_id);
-      })
-      .then((comments) => {
-        console.log(comments, "<----- COMMENTS");
-        res.status(200).send({ comments });
-      })
-      .catch(next);
-  };
+      }
+      res.status(200).send({ comments });
+  })
+  .catch(next);
+}
 
-  exports.postCommentsByArticleId = (req,res,next) => {
-    const {article_id} = req.params
-    const {body} = req
-    const promises = [insertCommentsByArticleId(article_id,body),selectArticleById(article_id)]
-    return Promise.all(promises)
-    .then((fulfilledPromises) => {
-      postedComment = fulfilledPromises[0]
-      res.status(201).send({postedComment})
-    })
-    .catch(next)
-  }
+exports.postCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const comment = req.body;
+  Promise.all([
+    selectArticleById(article_id),
+    insertCommentsByArticleId(article_id, comment)
+  ])
+  .then(([article, postedComment]) => {
+      if (!article) {
+        return res.status(404).send({ msg: 'requested Id not found' });
+      }
+      res.status(201).send({ postedComment });
+  })
+  .catch(next);
+}
 
 
   
