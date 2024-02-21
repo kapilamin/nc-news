@@ -1,7 +1,8 @@
-const selectArticleById  = require("../models/articles.models");
+const{ selectArticleById } = require("../models/articles.models");
 const { insertCommentsByArticleId, selectCommentsByArticleId } = require("../models/comments.models");
 
 exports.getCommentsByArticleId = (req, res, next) => {
+    console.log("I AM IN THE CONTROLLER");
     const { article_id } = req.params;
     selectArticleById(article_id) 
       .then(article => {
@@ -11,6 +12,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
         return selectCommentsByArticleId(article_id);
       })
       .then((comments) => {
+        console.log(comments, "<----- COMMENTS");
         res.status(200).send({ comments });
       })
       .catch(next);
