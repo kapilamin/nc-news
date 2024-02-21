@@ -22,5 +22,42 @@ exports.selectArticleById = (id) => {
   });
 }
 
+// exports.updateArticleById = (article_id, body) => {
+//   const {inc_votes} = body
+//   if (!inc_votes || (typeof inc_votes !== 'number')) {
+//     return Promise.reject({status:400,customErrMsg:'invalid vote increment supplied'})
+//   }
+//   return db.query(`UPDATE articles
+//   SET votes = votes + $1
+//   WHERE article_id = $2 RETURNING *;`,[inc_votes,article_id])
+//   .then(({rows}) => {
+//     return rows[0]
+//   })
+// }
+
+exports.updateArticleById = (article_id, body) => {
+  const { inc_votes } = body;
+  if (inc_votes === undefined || typeof inc_votes !== 'number') {
+    return Promise.reject({
+      status: 400,
+      msg: 'invalid vote increment supplied',
+    });
+  }
+  return db.query(`
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2 RETURNING *;
+  `, [inc_votes, article_id])
+  .then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: 'requested article Id not found',
+      });
+    }
+    return rows[0];
+  });
+};
+
 
 

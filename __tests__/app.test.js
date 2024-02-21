@@ -80,6 +80,62 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toEqual('requested article Id not found')
       })
     })
+    test("PATCH: 200 should increment the votes of a specified article by the supplied amount", () => {
+      const expectedArticle = {
+        article_id: 1,
+        title: 'Living in the shadow of a great man',
+        topic: 'mitch',
+        author: 'butter_bridge',
+        body: 'I find this existence challenging',
+        created_at: '2020-07-09T20:11:00.000Z',
+        votes: 105,
+        article_img_url:
+          'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+      }
+      return request(app)
+      .patch('/api/articles/1')
+      .send({inc_votes:5})
+      .expect(200)
+      .then(({body}) => {
+        expect(body.updatedArticle).toEqual(expectedArticle)
+      })
+    })
+    test("PATCH: 404 when attempting to udpate an article with an id that doesn't exist", () => {
+      return request(app)
+        .patch('/api/articles/99999')
+        .send({inc_votes:5})
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('requested article Id not found')
+        })
+    })
+    test('PATCH: 400 when attempting to update an article with an invalid id', () => {
+      return request(app)
+        .patch('/api/articles/cat')
+        .send({inc_votes:5})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('invalid Id supplied')
+        })
+    })
+    test("PATCH: 400 when attempting to update an article with an invalid vote count", () => {
+      return request(app)
+        .patch('/api/articles/1')
+        .send({inc_votes:'banana'})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('invalid vote increment supplied')
+        })
+    })
+    test("PATCH: 400 when attempting to update an article without an inc_votes value", () => {
+      return request(app)
+        .patch('/api/articles/1')
+        .send({inc_comments:5})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('invalid vote increment supplied')
+        })
+    })
   })
   
 describe('/api/articles', () => {
