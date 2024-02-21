@@ -164,12 +164,35 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toEqual('invalid id supplied')
           })
       })
-      test("GET: 404 when requesting comments from an article with an id that doesn't exist", () => {
+    test("GET: 404 when requesting comments from an article with an id that doesn't exist", () => {
+    return request(app)
+        .get('/api/articles/99999/comments')
+        .expect(404)
+        .then(({ body }) => {
+        expect(body.msg).toEqual('requested article Id not found')
+        })
+    })
+    test("GET: 200 returns an empty array when requesting comments from a valid article that doesn't have any associated comments", () => {
         return request(app)
-          .get('/api/articles/99999/comments')
-          .expect(404)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.comments).toHaveLength(0)
+        })
+    })
+    test('POST: 201 should return the posted comment', () => {
+        return request(app)
+          .post('/api/articles/4/comments')
+          .send({ username: 'lurker', body: 'Ditch Mitch' })
+          .expect(201)
           .then(({ body }) => {
-            expect(body.msg).toEqual('requested ID not found')
+            const { postedComment } = body
+            expect(postedComment.author).toBe('lurker')
+            expect(postedComment.body).toBe('Ditch Mitch')
+            expect(postedComment.article_id).toBe(4)
+            expect(postedComment.votes).toBe(0)
+            expect(postedComment.comment_id).toBe(19)
+            expect(typeof postedComment.created_at).toBe('string')
         })
     })
 })
