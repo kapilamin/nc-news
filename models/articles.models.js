@@ -5,7 +5,7 @@ exports.selectAllArticles = () => {
   LEFT OUTER JOIN comments ON articles.article_id = comments.article_id
   GROUP By articles.article_id
   ORDER BY articles.created_at DESC;`)
-  .then(({rows}) => {
+  .then(({ rows }) => {
     return rows
   })
 }
@@ -14,21 +14,32 @@ exports.selectArticleById = (id) => {
   return db.query('SELECT * FROM articles WHERE article_id = $1', [id])
   .then((res) => {
       if (!res.rows.length) {
-          return Promise.reject({status: 404, msg: 'requested article Id not found'})
+          return Promise.reject({
+          status: 404, msg: 'requested article Id not found'
+        })
       }
       return res.rows[0];
   });
 }
 
 exports.selectCommentsByArticleId = (id) => {
-  return db.query(`SELECT * FROM comments
-  WHERE article_id = $1
-  ORDER BY comments.created_at DESC;`,[id])
-  .then(({rows}) => {
-    if (!rows.length) {
-      return Promise.reject({status:404, msg:'requested ID not found'})
-    }
-    return rows
-  })
+  return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY comments.created_at DESC;`, [id])
+    .then(({ rows }) => {
+      return rows; 
+    });
+};
+
+exports.insertCommentsByArticleId = (article_id, comment) => {
+  const { username, body } = comment
+  return db
+    .query(
+      `INSERT INTO comments (author, body, article_id)
+      VALUES ($1, $2, $3) RETURNING *;`,
+      [username, body, article_id]
+    )
+    .then(({ rows }) => {
+      return rows[0]
+    })
 }
+
 
