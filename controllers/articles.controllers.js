@@ -17,19 +17,19 @@ exports.getArticleById = (req, res, next) => {
     .catch(next)
 }
 
-exports.patchArticleById = (req,res,next) => {
-  const {article_id} = req.params
-  const promises = [updateArticleById(article_id,req.body), selectArticleById(article_id)]
 
-  return Promise.all(promises).then((fulfilledPromises) => {
-    updatedArticle = fulfilledPromises[0]
-    res.status(200).send({updatedArticle})
-  })
-  .catch(next)
-}
-
-
-
-
-
-  
+exports.patchArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  if (inc_votes === undefined || typeof inc_votes !== 'number') {
+    return res.status(400).send({ msg: 'invalid vote increment supplied' });
+  }
+  updateArticleById(article_id, { inc_votes })
+    .then(updatedArticle => {
+      if (!updatedArticle) {
+        return res.status(404).send({ msg: 'requested article Id not found' });
+      }
+      res.status(200).send({ updatedArticle });
+    })
+    .catch(next); 
+};

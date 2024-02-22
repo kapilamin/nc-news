@@ -111,14 +111,14 @@ describe('/api/articles/:article_id', () => {
     })
     test('PATCH: 400 when attempting to update an article with an invalid id', () => {
       return request(app)
-        .patch('/api/articles/cat')
+        .patch('/api/articles/banana')
         .send({inc_votes:5})
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toEqual('invalid Id supplied')
         })
     })
-    test("PATCH: 400 when attempting to update an article with an invalid vote count", () => {
+   test("PATCH: 400 when attempting to update an article with an invalid vote count", () => {
       return request(app)
         .patch('/api/articles/1')
         .send({inc_votes:'banana'})
