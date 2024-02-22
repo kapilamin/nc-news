@@ -1,4 +1,5 @@
 const { selectArticleById, selectAllArticles, updateArticleById } = require("../models/articles.models")
+const { removeCommentById } = require("../models/comments.models")
 
 exports.getAllArticles = (req,res,next) => {
     return selectAllArticles()
@@ -33,3 +34,12 @@ exports.patchArticleById = (req, res, next) => {
     })
     .catch(next); 
 };
+
+exports.deleteCommentById = (req,res,next) => {
+  const {comment_id} = req.params
+  return removeCommentById(comment_id)
+  .then(() => {
+    res.status(204).send()
+  })
+  .catch(next)
+}
