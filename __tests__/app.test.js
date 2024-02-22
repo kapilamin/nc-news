@@ -137,7 +137,7 @@ describe('/api/articles/:article_id', () => {
         })
     })
   })
-  
+
 describe('/api/articles', () => {
     test('GET: 200 should return an array of all articles,and all articles should have the following core properties: article_id,author,title,topic,created_at,votes,article_img_url', () => {
       return request(app)
@@ -287,4 +287,24 @@ describe('/api/articles/:article_id/comments', () => {
           expect(body.msg).toEqual('body missing required field')
         })
     })
+    test('POST: 201 should return the posted comment,ignoring unnecessary properties in the supplied body', () => {
+      return request(app)
+        .post('/api/articles/1/comments')
+        .send({
+          username: 'lurker',
+          body: 'Mitch spends too much time on the internet',
+          article_id: 4,
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { postedComment } = body
+          expect(postedComment.author).toBe('lurker')
+          expect(postedComment.body).toBe('Mitch spends too much time on the internet')
+          expect(postedComment.article_id).toBe(1)
+          expect(postedComment.votes).toBe(0)
+          expect(postedComment.comment_id).toBe(19)
+          expect(typeof postedComment.created_at).toBe('string')
+        })
+    })
+  
   })
