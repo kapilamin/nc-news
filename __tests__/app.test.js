@@ -306,7 +306,6 @@ describe('/api/articles/:article_id/comments', () => {
           expect(typeof postedComment.created_at).toBe('string')
         })
     })
-<<<<<<< HEAD
  })
 
  describe('/api/users', () => {
@@ -324,33 +323,3 @@ describe('/api/articles/:article_id/comments', () => {
       })
   })
 })
-=======
-})
-
-describe('/api/comments/:comment_id endpoint', () => {
-  test('DELETE: 204 with no content when successfully deleting comment with supplied id', () => {
-    return request(app)
-      .delete('/api/comments/1')
-      .expect(204)
-      .then((res) => {
-        expect(res.body).toEqual({})
-      })
-  })
-  test('DELETE: 400 when attempting to delete an article with an invalid id', () => {
-    return request(app)
-      .delete('/api/comments/cat')
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toEqual('invalid Id supplied')
-      })
-  })
-  test("DELETE: 404 when attempting to udpate an article with an id that doesn't exist", () => {
-    return request(app)
-      .delete('/api/comments/99999')
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toEqual('requested Id not found')
-      })
-  })
-})
->>>>>>> 7a8c9ede86e1b25c5e83807e2367ad94216a977c
