@@ -306,31 +306,20 @@ describe('/api/articles/:article_id/comments', () => {
           expect(typeof postedComment.created_at).toBe('string')
         })
     })
-})
+ })
 
-describe('/api/comments/:comment_id endpoint', () => {
-  test('DELETE: 204 with no content when successfully deleting comment with supplied id', () => {
+ describe('/api/users', () => {
+  test('GET: 200 should return an array of all users with username, name and avatar_url properties to the client', () => {
     return request(app)
-      .delete('/api/comments/1')
-      .expect(204)
-      .then((res) => {
-        expect(res.body).toEqual({})
-      })
-  })
-  test('DELETE: 400 when attempting to delete an article with an invalid id', () => {
-    return request(app)
-      .delete('/api/comments/cat')
-      .expect(400)
+      .get('/api/users')
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toEqual('invalid Id supplied')
+        expect(body.users).toHaveLength(4)
+        body.users.forEach((user) => {
+          expect(typeof user.username).toBe('string')
+          expect(typeof user.name).toBe('string')
+          expect(typeof user.avatar_url).toBe('string')
       })
-  })
-  test("DELETE: 404 when attempting to udpate an article with an id that doesn't exist", () => {
-    return request(app)
-      .delete('/api/comments/99999')
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toEqual('requested Id not found')
-      })
+    })
   })
 })
