@@ -1,4 +1,4 @@
-const { selectArticleById, selectAllArticles } = require("../models/articles.models")
+const { selectArticleById, selectAllArticles, updateArticleById } = require("../models/articles.models")
 
 exports.getAllArticles = (req,res,next) => {
     return selectAllArticles()
@@ -18,7 +18,18 @@ exports.getArticleById = (req, res, next) => {
 }
 
 
-
-
-
-  
+exports.patchArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  if (inc_votes === undefined || typeof inc_votes !== 'number') {
+    return res.status(400).send({ msg: 'invalid vote increment supplied' });
+  }
+  updateArticleById(article_id, { inc_votes })
+    .then(updatedArticle => {
+      if (!updatedArticle) {
+        return res.status(404).send({ msg: 'requested article Id not found' });
+      }
+      res.status(200).send({ updatedArticle });
+    })
+    .catch(next); 
+};
