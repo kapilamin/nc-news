@@ -319,7 +319,7 @@ describe('/api/articles/:article_id/comments', () => {
           expect(typeof user.username).toBe('string')
           expect(typeof user.name).toBe('string')
           expect(typeof user.avatar_url).toBe('string')
-        })
       })
+    })
   })
 })
