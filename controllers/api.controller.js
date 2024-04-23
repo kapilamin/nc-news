@@ -1,4 +1,4 @@
-const { selectAPIEndpoints } = require("../models/api.models.js");
+const { selectAPIEndpoints } = require("../models/api.model.js");
 
 exports.getAPIEndpoints = (request, response, next) =>
 {

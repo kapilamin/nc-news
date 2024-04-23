@@ -1,5 +1,5 @@
 const commentsRouter = require('express').Router();
-const { getCommentsByArticleID, postCommentAtArticleID, patchCommentByID, deleteCommentByID } = require('../controllers/comments.controllers.js');
+const { getCommentsByArticleID, postCommentAtArticleID, patchCommentByID, deleteCommentByID } = require('../controllers/comments.controller.js');
 
 commentsRouter.get('/articles/:article_id/comments', getCommentsByArticleID);
 commentsRouter.post('/articles/:article_id/comments', postCommentAtArticleID);
