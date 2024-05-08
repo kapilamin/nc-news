@@ -25,6 +25,7 @@ exports.postNewComment = (request, response, next) => {
     if (!Object.keys(request.body)[0].includes('username') || !Object.keys(request.body)[1].includes('body') || Object.keys(request.body).length < 2 || typeof newComment.username !== "string" || typeof newComment.body !== "string") {
         return response.status(400).send({msg: 'Invalid input'});
     }
+    newComment.created_at = new Date().toISOString();
 
     const promises = [selectArticleById(article_id), selectUserByUsername(newComment.username), insertNewComment(newComment, article_id)];
 
