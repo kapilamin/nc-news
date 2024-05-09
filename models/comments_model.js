@@ -8,7 +8,7 @@ exports.selectCommentsByArticleId = (article_id) => {
 }
 
 exports.insertNewComment = ({username, body}, article_id) => {
-    return db.query('INSERT INTO comments (body, author, article_id, votes) VALUES ($1, $2, $3, $4) RETURNING *;', [body, username, article_id, 0])
+    return db.query('INSERT INTO comments (body, author, article_id, votes, created_at) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *;', [body, username, article_id, 0])
     .then(({rows}) => {
         return rows;
     })
