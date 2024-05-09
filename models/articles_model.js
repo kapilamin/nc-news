@@ -2,7 +2,7 @@ const db = require('../db/connection');
 
 exports.selectAllArticles = (topic, sort_by='created_at', order='DESC') => {
 
-    const validSoryBys = ["title", "topic", "author", "created_at", "votes", "article_img_url"];
+    const validSoryBys = ["title", "topic", "author", "created_at", "votes", "article_img_url", "comment_count"];
 
     const validOrders = ["ASC", "DESC"]
 
